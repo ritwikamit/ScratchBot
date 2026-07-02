@@ -21,9 +21,9 @@ export default function MessageInput({ onSend, loading }) {
   };
 
   return (
-    <div className="shrink-0 px-2 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-t border-white/5 bg-cosmic-800/40 backdrop-blur-xl">
+    <div className="shrink-0 px-2 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-t border-white/5 bg-black/40 backdrop-blur-2xl">
       <div className="max-w-3xl mx-auto">
-        <div className="relative flex items-center gap-2 bg-cosmic-700/50 backdrop-blur-md rounded-2xl ring-1 ring-white/5 focus-within:ring-purple-500/30 transition-all duration-300 px-3 sm:px-4 py-1.5 sm:py-2">
+        <div className="relative flex items-center gap-2 bg-black/50 backdrop-blur-2xl rounded-2xl ring-1 ring-white/10 focus-within:ring-purple-500/40 focus-within:shadow-lg focus-within:shadow-purple-500/10 transition-all duration-300 px-3 sm:px-4 py-1.5 sm:py-2">
           <textarea
             ref={inputRef}
             value={input}
@@ -32,7 +32,7 @@ export default function MessageInput({ onSend, loading }) {
             placeholder="Type a message..."
             rows={1}
             disabled={loading}
-            className="flex-1 bg-transparent text-sm text-cosmic-50 placeholder:text-cosmic-300 outline-none resize-none py-1.5 sm:py-2 max-h-32 disabled:opacity-50"
+            className="flex-1 bg-transparent text-sm text-white placeholder:text-cosmic-300 outline-none resize-none py-1.5 sm:py-2 max-h-32 disabled:opacity-50"
             style={{ fieldSizing: 'content' }}
           />
 

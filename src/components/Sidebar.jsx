@@ -1,18 +1,6 @@
 import { motion } from 'framer-motion';
 import { formatDate, truncate } from '../utils/helpers';
-
-const LogoSvg = ({ className }) => (
-  <svg className={className} viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="sbSide" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#ec4899"/>
-      </linearGradient>
-    </defs>
-    <rect width="36" height="36" rx="10" fill="#111122" stroke="url(#sbSide)" stroke-width="1"/>
-    <path d="M18 5l2.2 6.6L27 14l-6.8 2.4L18 23l-2.2-6.6L9 14l6.8-2.4L18 5z" fill="url(#sbSide)" opacity="0.85"/>
-    <circle cx="18" cy="13.5" r="1.8" fill="white" opacity="0.35"/>
-  </svg>
-);
+import ScratchBotLogo from './ScratchBotLogo';
 
 const itemVariants = {
   hidden: { opacity: 0, x: -16 },
@@ -36,7 +24,7 @@ export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, 
       animate={isOverlay ? { x: 0 } : { x: 0, opacity: 1 }}
       exit={isOverlay ? { x: -320, transition: { duration: 0.2 } } : { x: -320, opacity: 0, transition: { duration: 0.2 } }}
       transition={isOverlay ? { type: 'spring', stiffness: 300, damping: 30 } : { type: 'spring', stiffness: 260, damping: 26 }}
-      className={`h-full bg-cosmic-800/95 backdrop-blur-xl border-r border-white/5 flex flex-col shrink-0 ${
+      className={`h-full bg-black/80 backdrop-blur-2xl border-r border-white/5 flex flex-col shrink-0 ${
         isOverlay ? 'w-72 sm:w-80 shadow-2xl shadow-black/50' : 'w-72'
       }`}
       style={{ zIndex: isOverlay ? 50 : 20 }}
@@ -44,7 +32,7 @@ export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, 
       <div className="p-4 sm:p-5 border-b border-white/5">
         <div className="flex items-center justify-between mb-4 sm:mb-5">
           <div className="flex items-center gap-3">
-            <LogoSvg className="w-8 h-8 sm:w-9 sm:h-9 shrink-0" />
+            <ScratchBotLogo size={32} />
             <div>
               <h1 className="font-display font-bold text-white text-sm tracking-wider">
                 <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Scratch</span>Bot
@@ -70,7 +58,7 @@ export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, 
           onClick={onNewChat}
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.97 }}
-          className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium text-sm shadow-md shadow-purple-600/20 hover:shadow-lg hover:shadow-purple-600/30 transition-all duration-200"
+          className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium text-sm shadow-md shadow-purple-600/25 hover:shadow-lg hover:shadow-purple-600/40 transition-all duration-200"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/>

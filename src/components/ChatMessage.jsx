@@ -96,9 +96,12 @@ export default function ChatMessage({ message }) {
       className={`flex items-start gap-2 sm:gap-3 ${isUser ? 'justify-end' : ''}`}
     >
       {!isUser && (
-        <div className="shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-purple-500/80 to-pink-500/80 flex items-center justify-center shadow-md shadow-purple-500/10 mt-1">
-          <svg width="14" height="14" className="sm:w-4 sm:h-4" viewBox="0 0 36 36" fill="none">
-            <path d="M18 5l2.2 6.6L27 14l-6.8 2.4L18 23l-2.2-6.6L9 14l6.8-2.4L18 5z" fill="white" opacity="0.85"/>
+        <div className="shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-purple-500/80 to-pink-500/80 flex items-center justify-center shadow-md shadow-purple-500/15 mt-1">
+          <svg width="16" height="16" className="sm:w-[18px] sm:h-[18px]" viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="16" stroke="white" strokeWidth="1.5" opacity="0.3"/>
+            <circle cx="20" cy="20" r="10" stroke="white" strokeWidth="1.5" opacity="0.45"/>
+            <path d="M20 20 C20 14, 26 11, 29 14 C32 17, 29 22, 24 22 C20 22, 18 18, 20 15" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+            <circle cx="20" cy="20" r="3" fill="white"/>
           </svg>
         </div>
       )}
@@ -111,8 +114,8 @@ export default function ChatMessage({ message }) {
         <div
           className={`px-3 py-2.5 sm:px-4 sm:py-3 rounded-2xl text-sm leading-relaxed ${
             isUser
-              ? 'bg-purple-600/30 backdrop-blur-md text-purple-50 ring-1 ring-purple-400/20'
-              : 'bg-cosmic-700/40 backdrop-blur-md text-cosmic-50 ring-1 ring-white/5'
+              ? 'bg-purple-600/25 backdrop-blur-2xl text-purple-50 ring-1 ring-purple-400/20 shadow-md shadow-purple-500/5'
+              : 'bg-black/40 backdrop-blur-2xl text-white ring-1 ring-white/10'
           }`}
         >
           {isUser ? (

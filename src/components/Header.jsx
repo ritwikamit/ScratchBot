@@ -1,8 +1,13 @@
 import { motion } from 'framer-motion';
+import ScratchBotLogo from './ScratchBotLogo';
 
 export default function Header({ onClearChat, messageCount, onToggleSidebar }) {
+  const handleLogoClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <header className="h-12 sm:h-14 shrink-0 flex items-center justify-between px-3 sm:px-4 lg:px-6 border-b border-white/5 bg-cosmic-800/40 backdrop-blur-xl">
+    <header className="h-12 sm:h-14 shrink-0 flex items-center justify-between px-3 sm:px-4 lg:px-6 border-b border-white/5 bg-black/40 backdrop-blur-2xl">
       <div className="flex items-center gap-2 sm:gap-3">
         <motion.button
           onClick={onToggleSidebar}
@@ -15,16 +20,12 @@ export default function Header({ onClearChat, messageCount, onToggleSidebar }) {
           </svg>
         </motion.button>
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-sm">
-            <svg width="12" height="12" className="sm:w-[14px] sm:h-[14px]" viewBox="0 0 36 36" fill="none">
-              <path d="M18 5l2.2 6.6L27 14l-6.8 2.4L18 23l-2.2-6.6L9 14l6.8-2.4L18 5z" fill="white" opacity="0.85"/>
-            </svg>
-          </div>
+        <button onClick={handleLogoClick} className="flex items-center gap-2 sm:gap-3 group">
+          <ScratchBotLogo size={28} />
           <span className="font-display font-bold text-white text-xs sm:text-sm tracking-wider">
             <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Scratch</span>Bot
           </span>
-        </div>
+        </button>
 
         <span className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[11px] font-semibold tracking-wide ring-1 ring-emerald-500/20">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
