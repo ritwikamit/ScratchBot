@@ -1,19 +1,6 @@
 import { motion } from 'framer-motion';
 import { formatDate, truncate } from '../utils/helpers';
 
-const sidebarVariants = {
-  hidden: { x: -300, opacity: 0 },
-  visible: { x: 0, opacity: 1, transition: { type: 'spring', stiffness: 260, damping: 26 } },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, x: -16 },
-  visible: (i) => ({
-    opacity: 1, x: 0,
-    transition: { delay: 0.06 + i * 0.025, type: 'spring', stiffness: 300, damping: 28 },
-  }),
-};
-
 const LogoSvg = ({ className }) => (
   <svg className={className} viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -27,7 +14,15 @@ const LogoSvg = ({ className }) => (
   </svg>
 );
 
-export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, onDeleteChat }) {
+const itemVariants = {
+  hidden: { opacity: 0, x: -16 },
+  visible: (i) => ({
+    opacity: 1, x: 0,
+    transition: { delay: 0.04 + i * 0.02, type: 'spring', stiffness: 300, damping: 28 },
+  }),
+};
+
+export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, onDeleteChat, isOverlay, onClose }) {
   const grouped = chats.reduce((acc, chat) => {
     const label = formatDate(new Date(chat.createdAt));
     if (!acc[label]) acc[label] = [];
@@ -35,24 +30,40 @@ export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, 
     return acc;
   }, {});
 
-  return (
+  const sidebarPanel = (
     <motion.aside
-      variants={sidebarVariants}
-      initial="hidden"
-      animate="visible"
-      exit={{ x: -300, opacity: 0, transition: { duration: 0.2 } }}
-      className="w-72 h-full bg-cosmic-800/80 backdrop-blur-xl border-r border-white/5 flex flex-col shrink-0"
-      style={{ zIndex: 20 }}
+      initial={isOverlay ? { x: -320 } : { x: -320, opacity: 0 }}
+      animate={isOverlay ? { x: 0 } : { x: 0, opacity: 1 }}
+      exit={isOverlay ? { x: -320, transition: { duration: 0.2 } } : { x: -320, opacity: 0, transition: { duration: 0.2 } }}
+      transition={isOverlay ? { type: 'spring', stiffness: 300, damping: 30 } : { type: 'spring', stiffness: 260, damping: 26 }}
+      className={`h-full bg-cosmic-800/95 backdrop-blur-xl border-r border-white/5 flex flex-col shrink-0 ${
+        isOverlay ? 'w-72 sm:w-80 shadow-2xl shadow-black/50' : 'w-72'
+      }`}
+      style={{ zIndex: isOverlay ? 50 : 20 }}
     >
-      <div className="p-5 border-b border-white/5">
-        <div className="flex items-center gap-3 mb-5">
-          <LogoSvg className="w-9 h-9 shrink-0" />
-          <div>
-            <h1 className="font-display font-bold text-white text-sm tracking-wider">
-              <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Scratch</span>Bot
-            </h1>
-            <p className="text-[11px] text-cosmic-200 font-medium">AI Assistant</p>
+      <div className="p-4 sm:p-5 border-b border-white/5">
+        <div className="flex items-center justify-between mb-4 sm:mb-5">
+          <div className="flex items-center gap-3">
+            <LogoSvg className="w-8 h-8 sm:w-9 sm:h-9 shrink-0" />
+            <div>
+              <h1 className="font-display font-bold text-white text-sm tracking-wider">
+                <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Scratch</span>Bot
+              </h1>
+              <p className="text-[11px] text-cosmic-200 font-medium">AI Assistant</p>
+            </div>
           </div>
+          {isOverlay && (
+            <motion.button
+              onClick={onClose}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.9 }}
+              className="p-1.5 rounded-xl hover:bg-white/5 text-cosmic-200 transition-colors"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </motion.button>
+          )}
         </div>
 
         <motion.button
@@ -68,7 +79,7 @@ export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, 
         </motion.button>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-4 scrollbar-thin">
+      <nav className="flex-1 overflow-y-auto px-2 sm:px-3 py-3 space-y-4 scrollbar-thin">
         {Object.entries(grouped).map(([label, items]) => (
           <div key={label}>
             <p className="px-3 text-[11px] font-semibold text-cosmic-200 mb-2 uppercase tracking-[0.08em]">{label}</p>
@@ -105,9 +116,9 @@ export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, 
           </div>
         ))}
         {chats.length === 0 && (
-          <div className="text-center py-12 px-4">
-            <div className="w-12 h-12 rounded-2xl bg-cosmic-600/50 flex items-center justify-center mx-auto mb-3 ring-1 ring-white/5">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-cosmic-200">
+          <div className="text-center py-10 sm:py-12 px-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-cosmic-600/50 flex items-center justify-center mx-auto mb-3 ring-1 ring-white/5">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-cosmic-200">
                 <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
               </svg>
             </div>
@@ -125,4 +136,21 @@ export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, 
       </div>
     </motion.aside>
   );
+
+  if (isOverlay) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0, transition: { duration: 0.15 } }}
+        className="fixed inset-0 z-40 flex"
+      >
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+        {sidebarPanel}
+        <div className="flex-1" onClick={onClose} />
+      </motion.div>
+    );
+  }
+
+  return sidebarPanel;
 }

@@ -93,30 +93,30 @@ export default function ChatMessage({ message }) {
       layout
       onMouseEnter={() => setShowCopy(true)}
       onMouseLeave={() => setShowCopy(false)}
-      className={`flex items-start gap-3 ${isUser ? 'justify-end' : ''}`}
+      className={`flex items-start gap-2 sm:gap-3 ${isUser ? 'justify-end' : ''}`}
     >
       {!isUser && (
-        <div className="shrink-0 w-8 h-8 rounded-xl bg-gradient-to-br from-purple-500/80 to-pink-500/80 flex items-center justify-center shadow-md shadow-purple-500/10 mt-1">
-          <svg width="16" height="16" viewBox="0 0 36 36" fill="none">
+        <div className="shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-purple-500/80 to-pink-500/80 flex items-center justify-center shadow-md shadow-purple-500/10 mt-1">
+          <svg width="14" height="14" className="sm:w-4 sm:h-4" viewBox="0 0 36 36" fill="none">
             <path d="M18 5l2.2 6.6L27 14l-6.8 2.4L18 23l-2.2-6.6L9 14l6.8-2.4L18 5z" fill="white" opacity="0.85"/>
           </svg>
         </div>
       )}
 
       <div
-        className={`relative group max-w-[80%] lg:max-w-[70%] ${
+        className={`relative group max-w-[88%] sm:max-w-[80%] lg:max-w-[70%] ${
           isUser ? 'order-1' : ''
         }`}
       >
         <div
-          className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+          className={`px-3 py-2.5 sm:px-4 sm:py-3 rounded-2xl text-sm leading-relaxed ${
             isUser
               ? 'bg-purple-600/30 backdrop-blur-md text-purple-50 ring-1 ring-purple-400/20'
               : 'bg-cosmic-700/40 backdrop-blur-md text-cosmic-50 ring-1 ring-white/5'
           }`}
         >
           {isUser ? (
-            <p className="text-[15px] leading-relaxed">{message.text}</p>
+            <p className="text-sm sm:text-[15px] leading-relaxed">{message.text}</p>
           ) : (
             <MessageContent text={message.text} />
           )}
