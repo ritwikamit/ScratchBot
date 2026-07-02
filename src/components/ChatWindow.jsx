@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ChatMessage from './ChatMessage';
 import TypingIndicator from './TypingIndicator';
+import ScratchBotLogo from './ScratchBotLogo';
 
 export default function ChatWindow({ messages, loading, error, onSendMessage, onRetry }) {
   const bottomRef = useRef(null);
@@ -26,18 +27,7 @@ export default function ChatWindow({ messages, loading, error, onSendMessage, on
             exit={{ opacity: 0 }}
             className="h-full flex flex-col items-center justify-center px-4"
           >
-            <div className="mb-4 sm:mb-5">
-              <svg width="44" height="44" className="sm:w-[52px] sm:h-[52px] mx-auto" viewBox="0 0 40 40" fill="none">
-                <circle cx="20" cy="20" r="18" stroke="url(#sbGrad)" strokeWidth="1.5" opacity="0.35"/>
-                <circle cx="20" cy="20" r="12" stroke="url(#sbGrad)" strokeWidth="1.5" opacity="0.55"/>
-                <path d="M20 20 C20 12, 28 8, 32 12 C36 16, 32 24, 24 24 C18 24, 16 18, 20 14" stroke="url(#sbGrad)" strokeWidth="2" strokeLinecap="round" fill="none"/>
-                <circle cx="20" cy="20" r="3.5" fill="url(#sbGrad)"/>
-                <circle cx="32" cy="12" r="1.6" fill="#ec4899"/>
-                <circle cx="9" cy="9" r="1" fill="#a855f7" opacity="0.8"/>
-                <circle cx="33" cy="30" r="1.2" fill="#a855f7" opacity="0.6"/>
-                <defs><linearGradient id="sbGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#ec4899"/></linearGradient></defs>
-              </svg>
-            </div>
+            <ScratchBotLogo size={48} className="mx-auto mb-5 sm:mb-6" />
               <p className="text-sm sm:text-base font-medium text-white/80 mb-1">Ask me anything</p>
             <p className="text-xs text-cosmic-200">I can help you code, create, and explore ideas</p>
           </motion.div>
