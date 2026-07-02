@@ -34,8 +34,8 @@ export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, 
           <div className="flex items-center gap-3">
             <ScratchBotLogo size={32} />
             <div>
-              <h1 className="font-display font-bold text-white text-sm tracking-wider">
-                <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Scratch</span>Bot
+              <h1 className="font-display font-medium text-white text-sm tracking-wider">
+                ScratchBot
               </h1>
               <p className="text-[11px] text-cosmic-200 font-medium">AI Assistant</p>
             </div>

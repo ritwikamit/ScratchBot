@@ -101,7 +101,7 @@ export default function App() {
               >
                 <ScratchBotLogo size={56} className="mx-auto mb-5 sm:mb-6" />
                 <h2 className="text-lg sm:text-xl font-bold text-white mb-2 font-display tracking-wide">
-                  Welcome to <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Scratch</span>Bot
+                  Welcome to ScratchBot
                 </h2>
                 <p className="text-xs sm:text-sm text-cosmic-100 mb-5 sm:mb-6 mx-auto leading-relaxed">
                   Your cosmic AI assistant. Ask anything — from code to creativity.

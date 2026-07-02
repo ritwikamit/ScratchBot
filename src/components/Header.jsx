@@ -22,8 +22,8 @@ export default function Header({ onClearChat, messageCount, onToggleSidebar }) {
 
         <button onClick={handleLogoClick} className="flex items-center gap-2 sm:gap-3 group">
           <ScratchBotLogo size={28} />
-          <span className="font-display font-bold text-white text-xs sm:text-sm tracking-wider">
-            <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Scratch</span>Bot
+          <span className="font-display font-medium text-white text-xs sm:text-sm tracking-wider">
+            ScratchBot
           </span>
         </button>
 
