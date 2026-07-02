@@ -14,14 +14,24 @@ function loadChats() {
 }
 
 const PAUSE_AFTER = {
-  '.': 180,
-  '?': 180,
-  '!': 180,
-  ',': 100,
-  '\n': 120,
-  '#': 200,
-  '`': 150,
+  '.': 200,
+  '?': 220,
+  '!': 220,
+  ',': 90,
+  '\n': 160,
+  ':': 120,
+  ';': 100,
 };
+
+const TYPING_BASE = 18;
+const TYPING_VARIANCE = 22;
+
+function releaseWords(pending, onToken) {
+  const words = pending.split(/(?<=\s)/);
+  for (const w of words) {
+    setTimeout(() => onToken(w), 5);
+  }
+}
 
 function simulateTyping(fullText, onToken, signal) {
   return new Promise((resolve) => {
@@ -34,9 +44,7 @@ function simulateTyping(fullText, onToken, signal) {
 
       const chunk = words[i];
       const lastChar = chunk.trim().slice(-1);
-      const baseDelay = 20 + Math.random() * 25;
-      const extra = PAUSE_AFTER[lastChar] || PAUSE_AFTER[chunk[0]] || 0;
-      const delay = baseDelay + extra;
+      const delay = TYPING_BASE + Math.random() * TYPING_VARIANCE + (PAUSE_AFTER[lastChar] || 0);
 
       onToken(chunk);
       i++;
@@ -137,10 +145,38 @@ export function useChat() {
     setStreamingMessage(assistantMsgId);
 
     let accumulated = '';
+    let wordBuffer = '';
+    let wordTimer = null;
+
+    const flushWordBuffer = () => {
+      if (wordTimer) { clearTimeout(wordTimer); wordTimer = null; }
+      if (wordBuffer) {
+        accumulated += wordBuffer;
+        onToken(accumulated, assistantMsgId, chatId);
+        wordBuffer = '';
+      }
+    };
+
+    const scheduleWord = () => {
+      if (wordTimer) return;
+      wordTimer = setTimeout(() => {
+        wordTimer = null;
+        if (wordBuffer) {
+          const words = wordBuffer.split(/(?<=\s)/);
+          const next = words.shift();
+          wordBuffer = words.join('');
+          if (next) {
+            accumulated += next;
+            onToken(accumulated, assistantMsgId, chatId);
+          }
+          if (wordBuffer) scheduleWord();
+        }
+      }, TYPING_BASE + Math.random() * TYPING_VARIANCE);
+    };
 
     const handleToken = (token) => {
-      accumulated += token;
-      onToken(accumulated, assistantMsgId, chatId);
+      wordBuffer += token;
+      if (!wordTimer) scheduleWord();
     };
 
     const chat = chatsRef.current.find((c) => c.id === chatId);
@@ -148,8 +184,10 @@ export function useChat() {
 
     try {
       await sendMessageStream([...history, { role: 'user', text }], signal, handleToken);
+      flushWordBuffer();
     } catch (err) {
       if (signal.aborted) return;
+      flushWordBuffer();
       if (accumulated.length === 0) {
         try {
           const reply = await sendMessage([...history, { role: 'user', text }], signal);
@@ -200,15 +238,45 @@ export function useChat() {
 
     const history = chat.messages.filter((m) => m.id !== lastUserMsg.id);
     let accumulated = '';
+    let wordBuffer = '';
+    let wordTimer = null;
+
+    const flushWordBuffer = () => {
+      if (wordTimer) { clearTimeout(wordTimer); wordTimer = null; }
+      if (wordBuffer) {
+        accumulated += wordBuffer;
+        onToken(accumulated, assistantMsgId, chatId);
+        wordBuffer = '';
+      }
+    };
+
+    const scheduleWord = () => {
+      if (wordTimer) return;
+      wordTimer = setTimeout(() => {
+        wordTimer = null;
+        if (wordBuffer) {
+          const words = wordBuffer.split(/(?<=\s)/);
+          const next = words.shift();
+          wordBuffer = words.join('');
+          if (next) {
+            accumulated += next;
+            onToken(accumulated, assistantMsgId, chatId);
+          }
+          if (wordBuffer) scheduleWord();
+        }
+      }, TYPING_BASE + Math.random() * TYPING_VARIANCE);
+    };
 
     const handleToken = (token) => {
-      accumulated += token;
-      onToken(accumulated, assistantMsgId, chatId);
+      wordBuffer += token;
+      if (!wordTimer) scheduleWord();
     };
 
     sendMessageStream([...history, lastUserMsg], signal, handleToken)
+      .then(flushWordBuffer)
       .catch(async () => {
         if (signal.aborted) return;
+        flushWordBuffer();
         if (accumulated.length === 0) {
           try {
             const reply = await sendMessage([...history, lastUserMsg], signal);
