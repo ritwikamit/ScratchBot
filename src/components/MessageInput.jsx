@@ -21,7 +21,7 @@ export default function MessageInput({ onSend, loading }) {
   };
 
   return (
-    <div className="shrink-0 px-2 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-t border-white/5 bg-black/40 backdrop-blur-2xl">
+    <div className="shrink-0 px-2 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border-t border-white/5 bg-black/20 backdrop-blur-2xl">
       <div className="max-w-3xl mx-auto">
         <div className="relative flex items-center gap-2 bg-black/50 backdrop-blur-2xl rounded-2xl ring-1 ring-white/10 focus-within:ring-purple-500/40 focus-within:shadow-lg focus-within:shadow-purple-500/10 transition-all duration-300 px-3 sm:px-4 py-1.5 sm:py-2">
           <textarea

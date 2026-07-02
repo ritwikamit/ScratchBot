@@ -24,7 +24,7 @@ export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, 
       animate={isOverlay ? { x: 0 } : { x: 0, opacity: 1 }}
       exit={isOverlay ? { x: -320, transition: { duration: 0.2 } } : { x: -320, opacity: 0, transition: { duration: 0.2 } }}
       transition={isOverlay ? { type: 'spring', stiffness: 300, damping: 30 } : { type: 'spring', stiffness: 260, damping: 26 }}
-      className={`h-full bg-black/80 backdrop-blur-2xl border-r border-white/5 flex flex-col shrink-0 ${
+      className={`h-full bg-black/60 backdrop-blur-2xl border-r border-white/5 flex flex-col shrink-0 ${
         isOverlay ? 'w-72 sm:w-80 shadow-2xl shadow-black/50' : 'w-72'
       }`}
       style={{ zIndex: isOverlay ? 50 : 20 }}
@@ -34,8 +34,8 @@ export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, 
           <div className="flex items-center gap-3">
             <ScratchBotLogo size={32} />
             <div>
-              <h1 className="font-display font-medium text-white text-sm tracking-wider">
-                ScratchBot
+              <h1 className="font-display font-bold text-white text-sm tracking-wider">
+                <span className="bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">Scratch</span>Bot
               </h1>
               <p className="text-[11px] text-cosmic-200 font-medium">AI Assistant</p>
             </div>

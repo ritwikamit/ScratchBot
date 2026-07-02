@@ -7,7 +7,7 @@ export default function Header({ onClearChat, messageCount, onToggleSidebar }) {
   };
 
   return (
-    <header className="h-12 sm:h-14 shrink-0 flex items-center justify-between px-3 sm:px-4 lg:px-6 border-b border-white/5 bg-black/40 backdrop-blur-2xl">
+    <header className="h-12 sm:h-14 shrink-0 flex items-center justify-between px-3 sm:px-4 lg:px-6 border-b border-white/5 bg-black/20 backdrop-blur-2xl">
       <div className="flex items-center gap-2 sm:gap-3">
         <motion.button
           onClick={onToggleSidebar}
@@ -22,8 +22,8 @@ export default function Header({ onClearChat, messageCount, onToggleSidebar }) {
 
         <button onClick={handleLogoClick} className="flex items-center gap-2 sm:gap-3 group">
           <ScratchBotLogo size={28} />
-          <span className="font-display font-medium text-white text-xs sm:text-sm tracking-wider">
-            ScratchBot
+          <span className="font-display font-bold text-white text-xs sm:text-sm tracking-wider">
+            <span className="bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">Scratch</span>Bot
           </span>
         </button>
 
