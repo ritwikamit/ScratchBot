@@ -100,8 +100,9 @@ export default function ChatMessage({ message }) {
           <svg width="16" height="16" className="sm:w-[18px] sm:h-[18px]" viewBox="0 0 40 40" fill="none">
             <path d="M10 14 C10 12.34 11.34 11 13 11 L27 11 C28.66 11 30 12.34 30 14 L30 22 C30 23.66 28.66 25 27 25 L18 25 L13 29 L13 25 L13 25 C11.34 25 10 23.66 10 22 Z"
                   stroke="white" strokeWidth="1.4" strokeLinejoin="round" opacity="0.8"/>
-            <path d="M20 15 L20.8 17.2 L23 18 L20.8 18.8 L20 21 L19.2 18.8 L17 18 L19.2 17.2 Z"
-                  fill="white" opacity="0.8"/>
+            <circle cx="15" cy="17" r="1.2" fill="white" opacity="0.8"/>
+            <circle cx="20" cy="17" r="1.2" fill="white" opacity="0.8"/>
+            <circle cx="25" cy="17" r="1.2" fill="white" opacity="0.8"/>
           </svg>
         </div>
       )}

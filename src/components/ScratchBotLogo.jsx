@@ -7,7 +7,7 @@ export default function ScratchBotLogo({ size = 36, onClick, className = '' }) {
       return (
         <motion.button
           onClick={onClick}
-          whileHover={{ scale: 1.06 }}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className={`shrink-0 ${className}`}
           style={{ filter: 'drop-shadow(0 0 6px rgba(236,72,153,0.25))' }}
@@ -38,10 +38,9 @@ export default function ScratchBotLogo({ size = 36, onClick, className = '' }) {
         d="M8 12 C8 9.79 9.79 8 12 8 L28 8 C30.21 8 32 9.79 32 12 L32 22 C32 24.21 30.21 26 28 26 L16 26 L10 31 L10 26 L12 26 C9.79 26 8 24.21 8 22 Z"
         stroke="url(#sbGrad)" strokeWidth="1.6" strokeLinejoin="round"
       />
-      <path
-        d="M20 13 L21.2 16.3 L24.5 17.5 L21.2 18.7 L20 22 L18.8 18.7 L15.5 17.5 L18.8 16.3 Z"
-        fill="url(#sbGrad)"
-      />
+      <circle cx="15" cy="17" r="1.4" fill="url(#sbGrad)" />
+      <circle cx="20" cy="17" r="1.4" fill="url(#sbGrad)" />
+      <circle cx="25" cy="17" r="1.4" fill="url(#sbGrad)" />
     </svg>
   );
 }
