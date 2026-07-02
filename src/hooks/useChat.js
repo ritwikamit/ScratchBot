@@ -54,6 +54,21 @@ export function useChat() {
   const [error, setError] = useState(null);
   const abortControllerRef = useRef(null);
   const [streamingMessage, setStreamingMessage] = useState(null);
+  const chatsRef = useRef(chats);
+  const activeChatIdRef = useRef(activeChatId);
+  const streamingRef = useRef(null);
+
+  useEffect(() => {
+    chatsRef.current = chats;
+  }, [chats]);
+
+  useEffect(() => {
+    activeChatIdRef.current = activeChatId;
+  }, [activeChatId]);
+
+  useEffect(() => {
+    streamingRef.current = streamingMessage;
+  }, [streamingMessage]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
@@ -76,62 +91,69 @@ export function useChat() {
   }, []);
 
   const clearActiveChat = useCallback(() => {
-    setChats((prev) => prev.map((c) => c.id === activeChatId ? { ...c, messages: [], title: 'New Chat' } : c));
+    setChats((prev) => prev.map((c) => c.id === activeChatIdRef.current ? { ...c, messages: [], title: 'New Chat' } : c));
     setError(null);
-  }, [activeChatId]);
+  }, []);
 
   const addMessage = useCallback((role, text) => {
-    if (!activeChatId) return;
+    const id = activeChatIdRef.current;
+    if (!id) return null;
     const message = { id: generateId(), role, text, timestamp: new Date().toISOString() };
     setChats((prev) =>
       prev.map((c) => {
-        if (c.id !== activeChatId) return c;
+        if (c.id !== id) return c;
         const messages = [...c.messages, message];
         const title = c.title === 'New Chat' && role === 'user' ? text.slice(0, 60) + (text.length > 60 ? '...' : '') : c.title;
         return { ...c, messages, title };
       })
     );
     return message.id;
-  }, [activeChatId]);
+  }, []);
+
+  const onToken = useCallback((accumulated, assistantMsgId, chatId) => {
+    setChats((prev) =>
+      prev.map((c) => {
+        if (c.id !== chatId) return c;
+        const existing = c.messages.find((m) => m.id === assistantMsgId);
+        if (existing) {
+          return { ...c, messages: c.messages.map((m) => m.id === assistantMsgId ? { ...m, text: accumulated } : m) };
+        }
+        return { ...c, messages: [...c.messages, { id: assistantMsgId, role: 'assistant', text: accumulated, timestamp: new Date().toISOString() }] };
+      })
+    );
+  }, []);
 
   const sendUserMessage = useCallback(async (text) => {
-    if (!activeChatId) return;
+    const chatId = activeChatIdRef.current;
+    if (!chatId) return;
+
     addMessage('user', text);
     setLoading(true);
     setError(null);
     abortControllerRef.current = new AbortController();
     const signal = abortControllerRef.current.signal;
 
-    const chat = chats.find((c) => c.id === activeChatId);
-    const history = chat ? chat.messages : [];
-
     const assistantMsgId = generateId();
     setStreamingMessage(assistantMsgId);
 
     let accumulated = '';
 
-    const onToken = (token) => {
+    const handleToken = (token) => {
       accumulated += token;
-      setChats((prev) =>
-        prev.map((c) => {
-          if (c.id !== activeChatId) return c;
-          const existing = c.messages.find((m) => m.id === assistantMsgId);
-          if (existing) {
-            return { ...c, messages: c.messages.map((m) => m.id === assistantMsgId ? { ...m, text: accumulated } : m) };
-          }
-          return { ...c, messages: [...c.messages, { id: assistantMsgId, role: 'assistant', text: accumulated, timestamp: new Date().toISOString() }] };
-        })
-      );
+      onToken(accumulated, assistantMsgId, chatId);
     };
 
+    const chat = chatsRef.current.find((c) => c.id === chatId);
+    const history = chat ? chat.messages : [];
+
     try {
-      await sendMessageStream([...history, { role: 'user', text }], signal, onToken);
+      await sendMessageStream([...history, { role: 'user', text }], signal, handleToken);
     } catch (err) {
       if (signal.aborted) return;
       if (accumulated.length === 0) {
         try {
           const reply = await sendMessage([...history, { role: 'user', text }], signal);
-          if (!signal.aborted) await simulateTyping(reply, onToken, signal);
+          if (!signal.aborted) await simulateTyping(reply, handleToken, signal);
         } catch (err2) {
           if (!signal.aborted) setError(err2.message);
         }
@@ -140,8 +162,9 @@ export function useChat() {
       if (!signal.aborted) {
         setLoading(false);
         setStreamingMessage(null);
-        const chatState = chats.find((c) => c.id === activeChatId);
-        const msgExists = chatState?.messages?.some((m) => m.id === assistantMsgId);
+        const currentChats = chatsRef.current;
+        const currentChat = currentChats.find((c) => c.id === chatId);
+        const msgExists = currentChat?.messages?.some((m) => m.id === assistantMsgId);
         if (!msgExists && accumulated) {
           addMessage('assistant', accumulated);
         }
@@ -150,70 +173,56 @@ export function useChat() {
         setLoading(false);
       }
     }
-  }, [activeChatId, chats, addMessage]);
+  }, [addMessage, onToken]);
 
   const stopGeneration = useCallback(() => {
     abortControllerRef.current?.abort();
   }, []);
 
   const retry = useCallback(() => {
-    if (!activeChatId || !error) return;
-    const chat = chats.find((c) => c.id === activeChatId);
+    const chatId = activeChatIdRef.current;
+    if (!chatId || !error) return;
+    const chat = chatsRef.current.find((c) => c.id === chatId);
     if (!chat || chat.messages.length === 0) return;
     const lastUserMsg = [...chat.messages].reverse().find((m) => m.role === 'user');
     if (!lastUserMsg) return;
 
     setChats((prev) =>
-      prev.map((c) => c.id === activeChatId ? { ...c, messages: c.messages.filter((m) => m.role !== 'assistant' || m.id !== chat.messages[chat.messages.length - 1].id) } : c)
+      prev.map((c) => c.id === chatId ? { ...c, messages: c.messages.filter((m) => m.role !== 'assistant' || m.id !== chat.messages[chat.messages.length - 1].id) } : c)
     );
     setError(null);
     setLoading(true);
     abortControllerRef.current = new AbortController();
     const signal = abortControllerRef.current.signal;
 
-    const history = chat.messages.filter((m) => m.id !== lastUserMsg.id);
-
     const assistantMsgId = generateId();
     setStreamingMessage(assistantMsgId);
 
+    const history = chat.messages.filter((m) => m.id !== lastUserMsg.id);
     let accumulated = '';
 
-    const onToken = (token) => {
+    const handleToken = (token) => {
       accumulated += token;
-      setChats((prev) =>
-        prev.map((c) => {
-          if (c.id !== activeChatId) return c;
-          const existing = c.messages.find((m) => m.id === assistantMsgId);
-          if (existing) {
-            return { ...c, messages: c.messages.map((m) => m.id === assistantMsgId ? { ...m, text: accumulated } : m) };
-          }
-          return { ...c, messages: [...c.messages, { id: assistantMsgId, role: 'assistant', text: accumulated, timestamp: new Date().toISOString() }] };
-        })
-      );
+      onToken(accumulated, assistantMsgId, chatId);
     };
 
-    sendMessageStream([...history, lastUserMsg], signal, onToken)
+    sendMessageStream([...history, lastUserMsg], signal, handleToken)
       .catch(async () => {
         if (signal.aborted) return;
         if (accumulated.length === 0) {
           try {
             const reply = await sendMessage([...history, lastUserMsg], signal);
-            if (!signal.aborted) await simulateTyping(reply, onToken, signal);
+            if (!signal.aborted) await simulateTyping(reply, handleToken, signal);
           } catch (err2) {
             if (!signal.aborted) setError(err2.message);
           }
         }
       })
       .finally(() => {
-        if (!signal.aborted) {
-          setLoading(false);
-          setStreamingMessage(null);
-        } else {
-          setStreamingMessage(null);
-          setLoading(false);
-        }
+        setStreamingMessage(null);
+        setLoading(false);
       });
-  }, [activeChatId, chats, error, addMessage]);
+  }, [error, onToken]);
 
   return { chats, activeChat, activeChatId, loading, error, createChat, deleteChat, setActiveChatId, clearActiveChat, sendUserMessage, stopGeneration, retry, streamingMessage };
 }
