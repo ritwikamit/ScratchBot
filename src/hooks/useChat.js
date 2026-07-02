@@ -18,7 +18,7 @@ export function useChat() {
   const [activeChatId, setActiveChatId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const abortRef = useRef(false);
+  const abortControllerRef = useRef(null);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
@@ -63,20 +63,25 @@ export function useChat() {
     addMessage('user', text);
     setLoading(true);
     setError(null);
-    abortRef.current = false;
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
 
     const chat = chats.find((c) => c.id === activeChatId);
     const history = chat ? chat.messages : [];
 
     try {
-      const reply = await sendMessage([...history, { role: 'user', text }]);
-      if (!abortRef.current) addMessage('assistant', reply);
+      const reply = await sendMessage([...history, { role: 'user', text }], signal);
+      if (!signal.aborted) addMessage('assistant', reply);
     } catch (err) {
-      if (!abortRef.current) setError(err.message);
+      if (!signal.aborted) setError(err.message);
     } finally {
-      if (!abortRef.current) setLoading(false);
+      if (!signal.aborted) setLoading(false);
     }
   }, [activeChatId, chats, addMessage]);
+
+  const stopGeneration = useCallback(() => {
+    abortControllerRef.current?.abort();
+  }, []);
 
   const retry = useCallback(() => {
     if (!activeChatId || !error) return;
@@ -90,15 +95,16 @@ export function useChat() {
     );
     setError(null);
     setLoading(true);
-    abortRef.current = false;
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
 
     const history = chat.messages.filter((m) => m.id !== lastUserMsg.id);
 
-    sendMessage([...history, lastUserMsg])
-      .then((reply) => { if (!abortRef.current) addMessage('assistant', reply); })
-      .catch((err) => { if (!abortRef.current) setError(err.message); })
-      .finally(() => { if (!abortRef.current) setLoading(false); });
+    sendMessage([...history, lastUserMsg], signal)
+      .then((reply) => { if (!signal.aborted) addMessage('assistant', reply); })
+      .catch((err) => { if (!signal.aborted) setError(err.message); })
+      .finally(() => { if (!signal.aborted) setLoading(false); });
   }, [activeChatId, chats, error, addMessage]);
 
-  return { chats, activeChat, activeChatId, loading, error, createChat, deleteChat, setActiveChatId, clearActiveChat, sendUserMessage, retry };
+  return { chats, activeChat, activeChatId, loading, error, createChat, deleteChat, setActiveChatId, clearActiveChat, sendUserMessage, stopGeneration, retry };
 }

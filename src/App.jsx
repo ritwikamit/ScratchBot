@@ -22,7 +22,7 @@ function useMediaQuery(query) {
 export default function App() {
   const {
     chats, activeChat, activeChatId, loading, error,
-    createChat, deleteChat, setActiveChatId, clearActiveChat, sendUserMessage, retry,
+    createChat, deleteChat, setActiveChatId, clearActiveChat, sendUserMessage, stopGeneration, retry,
   } = useChat();
 
   const isDesktop = useMediaQuery('(min-width: 1024px)');
@@ -89,7 +89,7 @@ export default function App() {
                 onSendMessage={sendUserMessage}
                 onRetry={retry}
               />
-              <MessageInput onSend={sendUserMessage} loading={loading} />
+              <MessageInput onSend={sendUserMessage} onStop={stopGeneration} loading={loading} />
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center px-4 sm:px-6">

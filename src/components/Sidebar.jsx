@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { formatDate, truncate } from '../utils/helpers';
 import ScratchBotLogo from './ScratchBotLogo';
+import Button from './Button';
 
 const itemVariants = {
   hidden: { opacity: 0, x: -16 },
@@ -54,17 +55,17 @@ export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, 
           )}
         </div>
 
-        <motion.button
+        <Button
           onClick={onNewChat}
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.97 }}
-          className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium text-sm shadow-md shadow-purple-600/25 hover:shadow-lg hover:shadow-purple-600/40 transition-all duration-200"
+          variant="primary"
+          size="lg"
+          className="w-full"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/>
           </svg>
           New Chat
-        </motion.button>
+        </Button>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-2 sm:px-3 py-3 space-y-4 scrollbar-thin">
@@ -84,8 +85,8 @@ export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, 
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <svg className="shrink-0" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M8 1a3 3 0 00-3 3v1h6V4a3 3 0 00-3-3z"/>
-                        <path d="M3 7a2 2 0 012-2h6a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
+                        <path d="M3 1l10 5-10 5V1z"/>
+                        <path d="M3 8v3a2 2 0 002 2h6a2 2 0 002-2V8"/>
                       </svg>
                       <span className="truncate">{truncate(chat.title, 28)}</span>
                     </div>

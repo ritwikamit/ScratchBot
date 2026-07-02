@@ -2,7 +2,7 @@ const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 const MODEL = 'qwen/qwen-2.5-7b-instruct';
 
-export async function sendMessage(messages) {
+export async function sendMessage(messages, signal) {
   const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
 
   if (!apiKey) {
@@ -14,7 +14,7 @@ export async function sendMessage(messages) {
     content: msg.text,
   }));
 
-  const res = await fetch(API_URL, {
+  const res = await fetch(API_URL, { signal,
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Button from './Button';
 
 export default function CopyButton({ text }) {
   const [copied, setCopied] = useState(false);
@@ -9,14 +10,15 @@ export default function CopyButton({ text }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // fallback
+      //
     }
   };
 
   return (
-    <button
+    <Button
+      variant="ghost"
+      size="sm"
       onClick={handleCopy}
-      className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold text-cosmic-300 hover:text-cosmic-100 hover:bg-white/5 transition-all"
     >
       {copied ? (
         <>
@@ -34,6 +36,6 @@ export default function CopyButton({ text }) {
           Copy
         </>
       )}
-    </button>
+    </Button>
   );
 }

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import ScratchBotLogo from './ScratchBotLogo';
+import Button from './Button';
 
 export default function Header({ onClearChat, messageCount, onToggleSidebar }) {
   const handleLogoClick = () => {
@@ -35,17 +36,16 @@ export default function Header({ onClearChat, messageCount, onToggleSidebar }) {
 
       <div className="flex items-center gap-1">
         {messageCount > 0 && (
-          <motion.button
+          <Button
             onClick={onClearChat}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[10px] sm:text-[11px] font-semibold text-cosmic-200 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150"
+            variant="danger"
+            size="sm"
           >
             <svg width="11" height="11" className="sm:w-[13px] sm:h-[13px]" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M2 4h12M5 4V2.5a.5.5 0 01.5-.5h5a.5.5 0 01.5.5V4M13 4v9.5a1 1 0 01-1 1H4a1 1 0 01-1-1V4"/>
             </svg>
             Clear
-          </motion.button>
+          </Button>
         )}
       </div>
     </header>

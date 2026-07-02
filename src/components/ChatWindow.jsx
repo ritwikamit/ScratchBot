@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ChatMessage from './ChatMessage';
 import TypingIndicator from './TypingIndicator';
 import ScratchBotLogo from './ScratchBotLogo';
+import Button from './Button';
 
 export default function ChatWindow({ messages, loading, error, onSendMessage, onRetry }) {
   const bottomRef = useRef(null);
@@ -54,12 +55,13 @@ export default function ChatWindow({ messages, loading, error, onSendMessage, on
                   <p className="font-medium mb-1 text-xs sm:text-sm">Error</p>
                   <p className="text-red-300/80 text-xs break-words">{error}</p>
                 </div>
-                <button
+                <Button
                   onClick={onRetry}
-                  className="shrink-0 px-2.5 sm:px-3 py-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-xs font-semibold text-red-300 transition-all"
+                  variant="danger"
+                  size="sm"
                 >
                   Retry
-                </button>
+                </Button>
               </motion.div>
             )}
           </motion.div>

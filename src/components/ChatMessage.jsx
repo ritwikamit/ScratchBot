@@ -1,78 +1,7 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { marked } from 'marked';
+import MarkdownRenderer from './MarkdownRenderer';
 import CopyButton from './CopyButton';
-
-const renderer = new marked.Renderer();
-
-renderer.code = ({ text, lang }) => {
-  const langLabel = lang || 'code';
-  const langUpper = langLabel.toUpperCase();
-  return `<div class="code-block-wrapper">
-    <div class="code-block-header">
-      <span class="code-lang">${langUpper}</span>
-      <span class="code-copy-btn" data-code="${encodeURIComponent(text)}" data-lang="${langLabel}"></span>
-    </div>
-    <pre><code class="language-${langLabel}">${text}</code></pre>
-  </div>`;
-};
-
-renderer.paragraph = ({ tokens }) => {
-  const text = tokens.map((t) => t.raw).join('');
-  return `<p>${text}</p>\n`;
-};
-
-renderer.codespan = ({ text }) => `<code>${text}</code>`;
-
-marked.setOptions({
-  breaks: true,
-  gfm: true,
-  renderer,
-});
-
-function decodeHtmlEntities(str) {
-  const el = document.createElement('div');
-  el.innerHTML = str;
-  return el.textContent;
-}
-
-function MessageContent({ text }) {
-  const html = useMemo(() => {
-    try {
-      return marked.parse(text);
-    } catch {
-      return `<p>${text}</p>`;
-    }
-  }, [text]);
-
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    containerRef.current.querySelectorAll('.code-copy-btn').forEach((el) => {
-      const code = decodeHtmlEntities(el.getAttribute('data-code'));
-      const copyButton = document.createElement('span');
-      copyButton.innerHTML = `<button class="copy-btn-inline">Copy</button>`;
-      copyButton.querySelector('button').addEventListener('click', (e) => {
-        e.stopPropagation();
-        navigator.clipboard.writeText(code).then(() => {
-          const btn = copyButton.querySelector('button');
-          btn.textContent = 'Copied!';
-          setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
-        });
-      });
-      el.replaceWith(copyButton);
-    });
-  }, [html]);
-
-  return (
-    <div
-      ref={containerRef}
-      className="prose prose-sm max-w-none text-[15px] leading-relaxed"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
-  );
-}
 
 export default function ChatMessage({ message }) {
   const isUser = message.role === 'user';
@@ -124,7 +53,7 @@ export default function ChatMessage({ message }) {
           {isUser ? (
             <p className="text-sm sm:text-[15px] leading-relaxed">{message.text}</p>
           ) : (
-            <MessageContent text={message.text} />
+            <MarkdownRenderer content={message.text} />
           )}
         </div>
 
