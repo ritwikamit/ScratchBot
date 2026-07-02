@@ -45,10 +45,10 @@ interface Galaxy {
   rotation: number
 }
 
-const DUST_COUNT = 4000
-const ASTEROID_COUNT = 12
-const PLANET_COUNT = 5
-const GALAXY_COUNT = 3
+const DUST_COUNT = 2000
+const ASTEROID_COUNT = 6
+const PLANET_COUNT = 3
+const GALAXY_COUNT = 2
 const SPEED = 0.003
 
 function randomPastel(saturation = 60, lightness = 60): string {

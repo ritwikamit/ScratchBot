@@ -20,7 +20,7 @@ export async function sendMessage(messages) {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': window.location.origin,
-      'X-Title': 'Gemini Assistant',
+      'X-Title': 'ScratchBot',
     },
     body: JSON.stringify({
       model: MODEL,
