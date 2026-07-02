@@ -23,11 +23,9 @@ export default function TypingIndicator() {
     >
       <div className="shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-purple-500/60 to-pink-500/60 flex items-center justify-center shadow-sm mt-1">
         <svg width="14" height="14" className="sm:w-4 sm:h-4" viewBox="0 0 40 40" fill="none">
-          <path d="M12 15 C12 13.62 13.12 12.5 14.5 12.5 L25.5 12.5 C26.88 12.5 28 13.62 28 15 L28 21 C28 22.38 26.88 23.5 25.5 23.5 L19 23.5 L15 26.5 L15 23.5 L14.5 23.5 C13.12 23.5 12 22.38 12 21 Z"
-                stroke="white" strokeWidth="1.4" strokeLinejoin="round" opacity="0.6"/>
-          <circle cx="16" cy="17.5" r="1" fill="white" opacity="0.6"/>
-          <circle cx="20" cy="17.5" r="1" fill="white" opacity="0.6"/>
-          <circle cx="24" cy="17.5" r="1" fill="white" opacity="0.6"/>
+          <circle cx="20" cy="20" r="14" stroke="white" strokeWidth="1.4" opacity="0.5"/>
+          <circle cx="20" cy="20" r="8" stroke="white" strokeWidth="1" opacity="0.35"/>
+          <circle cx="20" cy="20" r="2.5" fill="white" opacity="0.6"/>
         </svg>
       </div>
       <div className="px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl bg-cosmic-700/40 backdrop-blur-md ring-1 ring-white/5 flex items-center gap-1.5">

@@ -98,11 +98,13 @@ export default function ChatMessage({ message }) {
       {!isUser && (
         <div className="shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-purple-500/80 to-pink-500/80 flex items-center justify-center shadow-md shadow-purple-500/15 mt-1">
           <svg width="16" height="16" className="sm:w-[18px] sm:h-[18px]" viewBox="0 0 40 40" fill="none">
-            <path d="M10 14 C10 12.34 11.34 11 13 11 L27 11 C28.66 11 30 12.34 30 14 L30 22 C30 23.66 28.66 25 27 25 L18 25 L13 29 L13 25 L13 25 C11.34 25 10 23.66 10 22 Z"
-                  stroke="white" strokeWidth="1.4" strokeLinejoin="round" opacity="0.8"/>
-            <circle cx="15" cy="17" r="1.2" fill="white" opacity="0.8"/>
-            <circle cx="20" cy="17" r="1.2" fill="white" opacity="0.8"/>
-            <circle cx="25" cy="17" r="1.2" fill="white" opacity="0.8"/>
+            <circle cx="20" cy="20" r="16" stroke="white" strokeWidth="1.4" opacity="0.7"/>
+            <circle cx="20" cy="20" r="10" stroke="white" strokeWidth="1" opacity="0.4"/>
+            <circle cx="20" cy="20" r="3" fill="white" opacity="0.8"/>
+            <line x1="20" y1="6" x2="20" y2="12" stroke="white" strokeWidth="1.4" strokeLinecap="round" opacity="0.6"/>
+            <line x1="20" y1="28" x2="20" y2="34" stroke="white" strokeWidth="1.4" strokeLinecap="round" opacity="0.6"/>
+            <line x1="6" y1="20" x2="12" y2="20" stroke="white" strokeWidth="1.4" strokeLinecap="round" opacity="0.6"/>
+            <line x1="28" y1="20" x2="34" y2="20" stroke="white" strokeWidth="1.4" strokeLinecap="round" opacity="0.6"/>
           </svg>
         </div>
       )}

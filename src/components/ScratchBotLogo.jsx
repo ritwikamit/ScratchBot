@@ -7,7 +7,7 @@ export default function ScratchBotLogo({ size = 36, onClick, className = '' }) {
       return (
         <motion.button
           onClick={onClick}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
           className={`shrink-0 ${className}`}
           style={{ filter: 'drop-shadow(0 0 6px rgba(236,72,153,0.25))' }}
@@ -34,13 +34,13 @@ export default function ScratchBotLogo({ size = 36, onClick, className = '' }) {
           <stop offset="100%" stopColor="#ec4899" />
         </linearGradient>
       </defs>
-      <path
-        d="M8 12 C8 9.79 9.79 8 12 8 L28 8 C30.21 8 32 9.79 32 12 L32 22 C32 24.21 30.21 26 28 26 L16 26 L10 31 L10 26 L12 26 C9.79 26 8 24.21 8 22 Z"
-        stroke="url(#sbGrad)" strokeWidth="1.6" strokeLinejoin="round"
-      />
-      <circle cx="15" cy="17" r="1.4" fill="url(#sbGrad)" />
-      <circle cx="20" cy="17" r="1.4" fill="url(#sbGrad)" />
-      <circle cx="25" cy="17" r="1.4" fill="url(#sbGrad)" />
+      <circle cx="20" cy="20" r="18" stroke="url(#sbGrad)" strokeWidth="1.5" opacity="0.9" />
+      <circle cx="20" cy="20" r="12" stroke="url(#sbGrad)" strokeWidth="1" opacity="0.5" />
+      <circle cx="20" cy="20" r="3.5" fill="url(#sbGrad)" />
+      <path d="M20 5 L20 11" stroke="url(#sbGrad)" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M20 29 L20 35" stroke="url(#sbGrad)" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M5 20 L11 20" stroke="url(#sbGrad)" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M29 20 L35 20" stroke="url(#sbGrad)" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
