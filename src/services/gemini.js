@@ -6,7 +6,7 @@ export async function sendMessage(messages) {
   const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
 
   if (!apiKey || apiKey === 'your_openrouter_key_here') {
-    throw new Error('Set a valid VITE_OPENROUTER_API_KEY in your .env file');
+    throw new Error('Set a valid VITE_OPENROUTER_API_KEY in your .env file. Run \'npm run dev\' (not preview) and make sure the .env file exists in the root folder with: VITE_OPENROUTER_API_KEY=sk-or-v1-...');
   }
 
   const chatMessages = messages.map((msg) => ({
