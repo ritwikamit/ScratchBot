@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import MarkdownRenderer from './MarkdownRenderer';
+import StreamingMessage from './StreamingMessage';
 import CopyButton from './CopyButton';
 
-export default function ChatMessage({ message }) {
+export default function ChatMessage({ message, isStreaming }) {
   const isUser = message.role === 'user';
   const [showCopy, setShowCopy] = useState(false);
 
@@ -52,6 +53,8 @@ export default function ChatMessage({ message }) {
         >
           {isUser ? (
             <p className="text-sm sm:text-[15px] leading-relaxed">{message.text}</p>
+          ) : isStreaming ? (
+            <StreamingMessage text={message.text} />
           ) : (
             <MarkdownRenderer content={message.text} />
           )}
@@ -62,7 +65,7 @@ export default function ChatMessage({ message }) {
             isUser ? 'justify-end' : ''
           }`}
         >
-          {!isUser && (
+          {!isUser && !isStreaming && (
             <motion.div
               initial={false}
               animate={{ opacity: showCopy ? 1 : 0, y: showCopy ? 0 : 2 }}
@@ -72,7 +75,7 @@ export default function ChatMessage({ message }) {
             </motion.div>
           )}
           <span className={`text-[10px] font-medium ${isUser ? 'text-purple-300/50' : 'text-cosmic-300'}`}>
-            {isUser ? 'You' : 'ScratchBot'}
+            {isUser ? 'You' : isStreaming ? 'Generating...' : 'ScratchBot'}
           </span>
         </div>
       </div>

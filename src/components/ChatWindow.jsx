@@ -1,11 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ChatMessage from './ChatMessage';
-import TypingIndicator from './TypingIndicator';
 import ScratchBotLogo from './ScratchBotLogo';
 import Button from './Button';
 
-export default function ChatWindow({ messages, loading, error, onSendMessage, onRetry }) {
+export default function ChatWindow({ messages, loading, error, onSendMessage, onRetry, streamingMessage }) {
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -36,11 +35,9 @@ export default function ChatWindow({ messages, loading, error, onSendMessage, on
           <motion.div key="messages" variants={containerVariants} initial="hidden" animate="visible" className="max-w-3xl mx-auto space-y-3">
             <AnimatePresence>
               {messages.map((msg) => (
-                <ChatMessage key={msg.id} message={msg} />
+                <ChatMessage key={msg.id} message={msg} isStreaming={msg.id === streamingMessage} />
               ))}
             </AnimatePresence>
-
-            {loading && <TypingIndicator />}
 
             {error && (
               <motion.div

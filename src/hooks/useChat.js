@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { sendMessage } from '../services/gemini';
+import { sendMessage, sendMessageStream } from '../services/gemini';
 import { generateId } from '../utils/helpers';
 
 const STORAGE_KEY = 'scratchbot_chat_history';
@@ -13,12 +13,47 @@ function loadChats() {
   }
 }
 
+const PAUSE_AFTER = {
+  '.': 180,
+  '?': 180,
+  '!': 180,
+  ',': 100,
+  '\n': 120,
+  '#': 200,
+  '`': 150,
+};
+
+function simulateTyping(fullText, onToken, signal) {
+  return new Promise((resolve) => {
+    const words = fullText.split(/(?<=\s)/);
+    let i = 0;
+
+    function pushNext() {
+      if (signal.aborted) { resolve(); return; }
+      if (i >= words.length) { resolve(); return; }
+
+      const chunk = words[i];
+      const lastChar = chunk.trim().slice(-1);
+      const baseDelay = 20 + Math.random() * 25;
+      const extra = PAUSE_AFTER[lastChar] || PAUSE_AFTER[chunk[0]] || 0;
+      const delay = baseDelay + extra;
+
+      onToken(chunk);
+      i++;
+      setTimeout(pushNext, delay);
+    }
+
+    pushNext();
+  });
+}
+
 export function useChat() {
   const [chats, setChats] = useState(() => loadChats());
   const [activeChatId, setActiveChatId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const abortControllerRef = useRef(null);
+  const [streamingMessage, setStreamingMessage] = useState(null);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
@@ -56,6 +91,7 @@ export function useChat() {
         return { ...c, messages, title };
       })
     );
+    return message.id;
   }, [activeChatId]);
 
   const sendUserMessage = useCallback(async (text) => {
@@ -69,13 +105,50 @@ export function useChat() {
     const chat = chats.find((c) => c.id === activeChatId);
     const history = chat ? chat.messages : [];
 
+    const assistantMsgId = generateId();
+    setStreamingMessage(assistantMsgId);
+
+    let accumulated = '';
+
+    const onToken = (token) => {
+      accumulated += token;
+      setChats((prev) =>
+        prev.map((c) => {
+          if (c.id !== activeChatId) return c;
+          const existing = c.messages.find((m) => m.id === assistantMsgId);
+          if (existing) {
+            return { ...c, messages: c.messages.map((m) => m.id === assistantMsgId ? { ...m, text: accumulated } : m) };
+          }
+          return { ...c, messages: [...c.messages, { id: assistantMsgId, role: 'assistant', text: accumulated, timestamp: new Date().toISOString() }] };
+        })
+      );
+    };
+
     try {
-      const reply = await sendMessage([...history, { role: 'user', text }], signal);
-      if (!signal.aborted) addMessage('assistant', reply);
+      await sendMessageStream([...history, { role: 'user', text }], signal, onToken);
     } catch (err) {
-      if (!signal.aborted) setError(err.message);
+      if (signal.aborted) return;
+      if (accumulated.length === 0) {
+        try {
+          const reply = await sendMessage([...history, { role: 'user', text }], signal);
+          if (!signal.aborted) await simulateTyping(reply, onToken, signal);
+        } catch (err2) {
+          if (!signal.aborted) setError(err2.message);
+        }
+      }
     } finally {
-      setLoading(false);
+      if (!signal.aborted) {
+        setLoading(false);
+        setStreamingMessage(null);
+        const chatState = chats.find((c) => c.id === activeChatId);
+        const msgExists = chatState?.messages?.some((m) => m.id === assistantMsgId);
+        if (!msgExists && accumulated) {
+          addMessage('assistant', accumulated);
+        }
+      } else {
+        setStreamingMessage(null);
+        setLoading(false);
+      }
     }
   }, [activeChatId, chats, addMessage]);
 
@@ -100,11 +173,47 @@ export function useChat() {
 
     const history = chat.messages.filter((m) => m.id !== lastUserMsg.id);
 
-    sendMessage([...history, lastUserMsg], signal)
-      .then((reply) => { if (!signal.aborted) addMessage('assistant', reply); })
-      .catch((err) => { if (!signal.aborted) setError(err.message); })
-      .finally(() => { setLoading(false); });
+    const assistantMsgId = generateId();
+    setStreamingMessage(assistantMsgId);
+
+    let accumulated = '';
+
+    const onToken = (token) => {
+      accumulated += token;
+      setChats((prev) =>
+        prev.map((c) => {
+          if (c.id !== activeChatId) return c;
+          const existing = c.messages.find((m) => m.id === assistantMsgId);
+          if (existing) {
+            return { ...c, messages: c.messages.map((m) => m.id === assistantMsgId ? { ...m, text: accumulated } : m) };
+          }
+          return { ...c, messages: [...c.messages, { id: assistantMsgId, role: 'assistant', text: accumulated, timestamp: new Date().toISOString() }] };
+        })
+      );
+    };
+
+    sendMessageStream([...history, lastUserMsg], signal, onToken)
+      .catch(async () => {
+        if (signal.aborted) return;
+        if (accumulated.length === 0) {
+          try {
+            const reply = await sendMessage([...history, lastUserMsg], signal);
+            if (!signal.aborted) await simulateTyping(reply, onToken, signal);
+          } catch (err2) {
+            if (!signal.aborted) setError(err2.message);
+          }
+        }
+      })
+      .finally(() => {
+        if (!signal.aborted) {
+          setLoading(false);
+          setStreamingMessage(null);
+        } else {
+          setStreamingMessage(null);
+          setLoading(false);
+        }
+      });
   }, [activeChatId, chats, error, addMessage]);
 
-  return { chats, activeChat, activeChatId, loading, error, createChat, deleteChat, setActiveChatId, clearActiveChat, sendUserMessage, stopGeneration, retry };
+  return { chats, activeChat, activeChatId, loading, error, createChat, deleteChat, setActiveChatId, clearActiveChat, sendUserMessage, stopGeneration, retry, streamingMessage };
 }
