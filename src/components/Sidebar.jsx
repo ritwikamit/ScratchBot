@@ -84,11 +84,9 @@ export default function Sidebar({ chats, activeChatId, onNewChat, onSelectChat, 
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="shrink-0 w-5 h-5 rounded-lg bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex items-center justify-center ring-1 ring-purple-500/20">
-                        <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-purple-300">
-                          <path d="M14 2l-5 5 5 5M2 12l5-5-5-5"/>
-                        </svg>
-                      </div>
+                      <svg className="shrink-0 text-cosmic-200" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 2l-5 5 5 5M2 12l5-5-5-5"/>
+                      </svg>
                       <span className="truncate">{truncate(chat.title, 28)}</span>
                     </div>
                     <button
