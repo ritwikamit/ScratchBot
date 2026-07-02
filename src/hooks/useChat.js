@@ -75,7 +75,7 @@ export function useChat() {
     } catch (err) {
       if (!signal.aborted) setError(err.message);
     } finally {
-      if (!signal.aborted) setLoading(false);
+      setLoading(false);
     }
   }, [activeChatId, chats, addMessage]);
 
@@ -103,7 +103,7 @@ export function useChat() {
     sendMessage([...history, lastUserMsg], signal)
       .then((reply) => { if (!signal.aborted) addMessage('assistant', reply); })
       .catch((err) => { if (!signal.aborted) setError(err.message); })
-      .finally(() => { if (!signal.aborted) setLoading(false); });
+      .finally(() => { setLoading(false); });
   }, [activeChatId, chats, error, addMessage]);
 
   return { chats, activeChat, activeChatId, loading, error, createChat, deleteChat, setActiveChatId, clearActiveChat, sendUserMessage, stopGeneration, retry };
