@@ -13,40 +13,32 @@ function loadChats() {
   }
 }
 
-const PAUSE_AFTER = {
-  '.': 200,
-  '?': 220,
-  '!': 220,
-  ',': 90,
-  '\n': 160,
-  ':': 120,
-  ';': 100,
+const PAUSE_AFTER_CHAR = {
+  '.': 160,
+  '?': 180,
+  '!': 180,
+  ',': 80,
+  '\n': 120,
+  ':': 90,
+  ';': 80,
 };
 
-const TYPING_BASE = 18;
-const TYPING_VARIANCE = 22;
-
-function releaseWords(pending, onToken) {
-  const words = pending.split(/(?<=\s)/);
-  for (const w of words) {
-    setTimeout(() => onToken(w), 5);
-  }
+function charDelay(ch) {
+  return PAUSE_AFTER_CHAR[ch] || 0;
 }
 
 function simulateTyping(fullText, onToken, signal) {
   return new Promise((resolve) => {
-    const words = fullText.split(/(?<=\s)/);
     let i = 0;
 
     function pushNext() {
       if (signal.aborted) { resolve(); return; }
-      if (i >= words.length) { resolve(); return; }
+      if (i >= fullText.length) { resolve(); return; }
 
-      const chunk = words[i];
-      const lastChar = chunk.trim().slice(-1);
-      const delay = TYPING_BASE + Math.random() * TYPING_VARIANCE + (PAUSE_AFTER[lastChar] || 0);
+      const ch = fullText[i];
+      const delay = 14 + Math.random() * 18 + charDelay(ch);
 
-      onToken(chunk);
+      onToken(ch);
       i++;
       setTimeout(pushNext, delay);
     }
@@ -145,38 +137,35 @@ export function useChat() {
     setStreamingMessage(assistantMsgId);
 
     let accumulated = '';
-    let wordBuffer = '';
-    let wordTimer = null;
+    let charBuffer = '';
+    let charTimer = null;
 
-    const flushWordBuffer = () => {
-      if (wordTimer) { clearTimeout(wordTimer); wordTimer = null; }
-      if (wordBuffer) {
-        accumulated += wordBuffer;
+    const flushCharBuffer = () => {
+      if (charTimer) { clearTimeout(charTimer); charTimer = null; }
+      if (charBuffer) {
+        accumulated += charBuffer;
         onToken(accumulated, assistantMsgId, chatId);
-        wordBuffer = '';
+        charBuffer = '';
       }
     };
 
-    const scheduleWord = () => {
-      if (wordTimer) return;
-      wordTimer = setTimeout(() => {
-        wordTimer = null;
-        if (wordBuffer) {
-          const words = wordBuffer.split(/(?<=\s)/);
-          const next = words.shift();
-          wordBuffer = words.join('');
-          if (next) {
-            accumulated += next;
-            onToken(accumulated, assistantMsgId, chatId);
-          }
-          if (wordBuffer) scheduleWord();
+    const scheduleChar = () => {
+      if (charTimer) return;
+      charTimer = setTimeout(() => {
+        charTimer = null;
+        if (charBuffer) {
+          const ch = charBuffer[0];
+          charBuffer = charBuffer.slice(1);
+          accumulated += ch;
+          onToken(accumulated, assistantMsgId, chatId);
+          if (charBuffer) scheduleChar();
         }
-      }, TYPING_BASE + Math.random() * TYPING_VARIANCE);
+      }, 14 + Math.random() * 18 + (charBuffer ? charDelay(charBuffer[0]) : 0));
     };
 
     const handleToken = (token) => {
-      wordBuffer += token;
-      if (!wordTimer) scheduleWord();
+      charBuffer += token;
+      if (!charTimer) scheduleChar();
     };
 
     const chat = chatsRef.current.find((c) => c.id === chatId);
@@ -187,7 +176,7 @@ export function useChat() {
       flushWordBuffer();
     } catch (err) {
       if (signal.aborted) return;
-      flushWordBuffer();
+      flushCharBuffer();
       if (accumulated.length === 0) {
         try {
           const reply = await sendMessage([...history, { role: 'user', text }], signal);
@@ -238,45 +227,42 @@ export function useChat() {
 
     const history = chat.messages.filter((m) => m.id !== lastUserMsg.id);
     let accumulated = '';
-    let wordBuffer = '';
-    let wordTimer = null;
+    let charBuffer = '';
+    let charTimer = null;
 
-    const flushWordBuffer = () => {
-      if (wordTimer) { clearTimeout(wordTimer); wordTimer = null; }
-      if (wordBuffer) {
-        accumulated += wordBuffer;
+    const flushCharBuffer = () => {
+      if (charTimer) { clearTimeout(charTimer); charTimer = null; }
+      if (charBuffer) {
+        accumulated += charBuffer;
         onToken(accumulated, assistantMsgId, chatId);
-        wordBuffer = '';
+        charBuffer = '';
       }
     };
 
-    const scheduleWord = () => {
-      if (wordTimer) return;
-      wordTimer = setTimeout(() => {
-        wordTimer = null;
-        if (wordBuffer) {
-          const words = wordBuffer.split(/(?<=\s)/);
-          const next = words.shift();
-          wordBuffer = words.join('');
-          if (next) {
-            accumulated += next;
-            onToken(accumulated, assistantMsgId, chatId);
-          }
-          if (wordBuffer) scheduleWord();
+    const scheduleChar = () => {
+      if (charTimer) return;
+      charTimer = setTimeout(() => {
+        charTimer = null;
+        if (charBuffer) {
+          const ch = charBuffer[0];
+          charBuffer = charBuffer.slice(1);
+          accumulated += ch;
+          onToken(accumulated, assistantMsgId, chatId);
+          if (charBuffer) scheduleChar();
         }
-      }, TYPING_BASE + Math.random() * TYPING_VARIANCE);
+      }, 14 + Math.random() * 18 + (charBuffer ? charDelay(charBuffer[0]) : 0));
     };
 
     const handleToken = (token) => {
-      wordBuffer += token;
-      if (!wordTimer) scheduleWord();
+      charBuffer += token;
+      if (!charTimer) scheduleChar();
     };
 
     sendMessageStream([...history, lastUserMsg], signal, handleToken)
-      .then(flushWordBuffer)
+      .then(flushCharBuffer)
       .catch(async () => {
         if (signal.aborted) return;
-        flushWordBuffer();
+        flushCharBuffer();
         if (accumulated.length === 0) {
           try {
             const reply = await sendMessage([...history, lastUserMsg], signal);
